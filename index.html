@@ -9509,24 +9509,31 @@
             <img src="assets/img/Gemini_Generated_Image_wr70nfwr70nfwr70-removebg-preview.png" alt="Solventa Software">
         </a>
         <ul class="nav-links">
-            <li><button onclick="navigateTo('home')" class="nav-btn active-link" id="btn-home">Inicio</button></li>
-            <li><button onclick="navigateToSection('home', 'soluciones')" class="nav-btn">Arquitectura</button></li>
-            <li><button onclick="navigateToSection('home', 'galeria')" class="nav-btn">Proyectos</button></li>
-            <li><button onclick="navigateTo('about')" class="nav-btn" id="btn-about">Nosotros</button></li>
-            <li><button onclick="navigateTo('contact')" class="nav-btn" id="btn-contact">Contacto</button></li>
-            <li><button onclick="navigateTo('planes')" class="nav-btn nav-highlight" id="btn-planes">PLANES Y
-                    PRECIOS</button></li>
-            <li><button onclick="openDemo()" class="nav-btn nav-highlight"
-                    style="background: rgba(0, 243, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-weight: 700;">Agendar
-                    Demo</button></li>
+            <li><button onclick="navigateTo('home')" class="nav-btn active-link" id="btn-home" data-i18n="nav_home">Inicio</button></li>
+            <li><button onclick="navigateToSection('home', 'soluciones')" class="nav-btn" data-i18n="nav_arch">Arquitectura</button></li>
+            <li><button onclick="navigateToSection('home', 'galeria')" class="nav-btn" data-i18n="nav_proy">Proyectos</button></li>
+            <li><button onclick="navigateTo('about')" class="nav-btn" id="btn-about" data-i18n="nav_about">Nosotros</button></li>
+            <li><button onclick="navigateTo('contact')" class="nav-btn" id="btn-contact" data-i18n="nav_contact">Contacto</button></li>
+            <li><button onclick="navigateTo('planes')" class="nav-btn nav-highlight" id="btn-planes" data-i18n="nav_planes">PLANES Y PRECIOS</button></li>
+            <li><button onclick="openDemo()" class="nav-btn nav-highlight" style="background: rgba(0, 243, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-weight: 700;" data-i18n="nav_demo">Agendar Demo</button></li>
             <li>
                 <a onclick="navigateTo('account')" class="btn-account" id="btn-account">
                     <svg width="25" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,5c1.66,0,3,1.34,3,3s-1.34,3-3,3S9,9.66,9,8 S10.34,5,12,5z M12,19.2c-2.5,0-4.71-1.28-6-3.22c0.03-1.99,4-3.08,6-3.08c1.99,0,5.97,1.09,6,3.08C16.71,17.92,14.5,19.2,12,19.2z" />
+                        <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,5c1.66,0,3,1.34,3,3s-1.34,3-3,3S9,9.66,9,8 S10.34,5,12,5z M12,19.2c-2.5,0-4.71-1.28-6-3.22c0.03-1.99,4-3.08,6-3.08c1.99,0,5.97,1.09,6,3.08C16.71,17.92,14.5,19.2,12,19.2z" />
                     </svg>
-                    Mi Cuenta
+                    <span data-i18n="nav_account">Mi Cuenta</span>
                 </a>
+            </li>
+            <!-- Selector de Idioma -->
+            <li class="lang-switcher">
+                <button class="lang-btn">
+                    <span id="current-lang-label">ES</span>
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor"><path d="M1 1l5 5 5-5" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <div class="lang-dropdown">
+                    <div class="lang-option active" onclick="setLanguage('es')">ESPAÑOL</div>
+                    <div class="lang-option" onclick="setLanguage('en')">ENGLISH</div>
+                </div>
             </li>
         </ul>
     </nav>
@@ -10042,7 +10049,7 @@
                 <div class="calc-box">
                     <div class="close-modal" style="position: absolute; top:10px; right:15px; font-size:1.5rem;"
                         onclick="closeCalc()">&times;</div>
-                    <h2>Calculadora ROI</h2>
+                    <h2 data-i18n="roi_title">Calculadora ROI</h2>
                     <div class="input-group">
                         <label>Inversión ($USD) <span id="dispInv" class="val-display">$50k</span></label>
                         <input type="range" id="inversion" min="10" max="500" value="50" oninput="calculate()">
@@ -10074,18 +10081,18 @@
 
             <header class="hero container">
                 <h1>
-                    <span class="hero-word">INNOVAR.</span><br>
-                    <span class="hero-word">DESARROLLAR.</span><br>
-                    <span class="hero-word">IMPLEMENTAR.</span>
+                    <span class="hero-word" data-i18n="hero_h1_1">INNOVAR.</span><br>
+                    <span class="hero-word" data-i18n="hero_h1_2">DESARROLLAR.</span><br>
+                    <span class="hero-word" data-i18n="hero_h1_3">IMPLEMENTAR.</span>
                 </h1>
-                <div class="tagline">Construyendo el Futuro de las Soluciones Digitales</div>
-                <button onclick="navigateTo('planes')" class="cta-btn">Ver Planes</button>
+                <div class="tagline" data-i18n="hero_tagline">Construyendo el Futuro de las Soluciones Digitales</div>
+                <button onclick="navigateTo('planes')" class="cta-btn" data-i18n="hero_btn">Ver Planes</button>
             </header>
             <div class="hero-image-section">
                 <video src="assets/video/video-solventa.mp4" autoplay loop muted playsinline></video>
             </div>
             <section id="soluciones" class="container" style="padding-top: 80px; margin-bottom: 80px; display: none !important;">
-                <h2 class="section-title">Arquitectura <span>HaraS</span></h2>
+                <h2 class="section-title" data-i18n="arch_title">Arquitectura <span>HaraS</span></h2>
 
                 <div class="cards-grid">
 
@@ -10202,7 +10209,7 @@
             </section>
 
             <section id="tecnologia" class="container" style="padding-top: 60px;">
-                <h2 class="section-title">Nuestras <span>Soluciones</span></h2>
+                <h2 class="section-title" data-i18n="soluciones_title">Nuestras <span>Soluciones</span></h2>
                 <div class="products-grid">
 
                     <div class="product-monolith product-hero">
@@ -10441,7 +10448,7 @@
             </section>
 
             <section id="inversores" class="investors-section container" style="display: none !important;">
-                <h2 class="section-title">Nuestros <span>Inversores</span></h2>
+                <h2 class="section-title" data-i18n="investors_title">Nuestros <span>Inversores</span></h2>
                 <div class="investment-chart-container">
                     <div class="chart-header">
                         <div class="chart-title">Crecimiento del Ecosistema</div>
@@ -10527,7 +10534,7 @@
             </section>
 
             <section id="galeria" class="slider-section container">
-                <h2 class="section-title">Proyectos <span>en Desarrollo</span></h2>
+                <h2 class="section-title" data-i18n="proyectos_title">Proyectos <span>en Desarrollo</span></h2>
 
                 <div class="carousel-wrapper">
                     <button class="slider-btn prev" onclick="moveSlide(-1)">&#10094;</button>
@@ -10806,7 +10813,7 @@
 
         <section id="view-contact" class="spa-view">
             <header class="about-hero container">
-                <h1>Contacto <br><span style="color: var(--accent-cyan);">Global Support</span></h1>
+                <h1 data-i18n="contact_title">Contacto <br><span style="color: var(--accent-cyan);">Global Support</span></h1>
                 <p class="lead-text">
                     ¿Tienes un desafío logístico a gran escala? Conversemos. Nuestro equipo técnico está listo para
                     diseñar tu próximo ecosistema digital.
@@ -10849,7 +10856,7 @@
 
         <section id="view-about" class="spa-view">
             <header class="about-hero container">
-                <h1>Somos Arquitectos<br><span style="color: var(--accent-cyan);">Invisibles</span></h1>
+                <h1 data-i18n="about_title">Somos Arquitectos<br><span style="color: var(--accent-cyan);">Invisibles</span></h1>
                 <p class="lead-text">
                     En un mundo donde la velocidad lo es todo, construimos la infraestructura digital que mueve la
                     economía global. No solo escribimos código; diseñamos eficiencia.
@@ -11043,8 +11050,8 @@
 
     <div class="container" style="max-width: 100%; width: 100%; padding: 0;">
         <!-- Título principal -->
-        <h1 style="font-size: 2.8rem;">Inteligencia Logística en <span style="color: var(--accent-cyan);">Flujo Continuo</span></h1>
-        <p class="subtitle">Motor de telemetría de SKUs en tiempo real. Reduzca la latencia en la toma de decisiones directivas mediante IA predictiva.</p>
+        <h1 style="font-size: 2.8rem;" data-i18n="mockup_h1">Inteligencia Logística en <span style="color: var(--accent-cyan);">Flujo Continuo</span></h1>
+        <p class="subtitle" data-i18n="mockup_p">Motor de telemetría de SKUs en tiempo real. Reduzca la latencia en la toma de decisiones directivas mediante IA predictiva.</p>
 
         <!-- GRID: Mockup Escritorio + Texto Marketing -->
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin: 40px 0;">
@@ -14006,6 +14013,88 @@
             
             runPackingCycle();
         }
+    </script>
+    <script>
+        // i18n System
+        const translations = {
+            'es': {
+                'nav_home': 'Inicio',
+                'nav_arch': 'Arquitectura',
+                'nav_proy': 'Proyectos',
+                'nav_about': 'Nosotros',
+                'nav_contact': 'Contacto',
+                'nav_planes': 'PLANES Y PRECIOS',
+                'nav_demo': 'Agendar Demo',
+                'nav_account': 'Mi Cuenta',
+                'hero_h1_1': 'INNOVAR.',
+                'hero_h1_2': 'DESARROLLAR.',
+                'hero_h1_3': 'IMPLEMENTAR.',
+                'hero_tagline': 'Construyendo el Futuro de las Soluciones Digitales',
+                'hero_btn': 'Ver Planes',
+                'roi_title': 'Calculadora ROI',
+                'arch_title': 'Arquitectura <span>HaraS</span>',
+                'soluciones_title': 'Nuestras <span>Soluciones</span>',
+                'investors_title': 'Nuestros <span>Inversores</span>',
+                'proyectos_title': 'Proyectos <span>en Desarrollo</span>',
+                'contact_title': 'Contacto <br><span style="color: var(--accent-cyan);">Global Support</span>',
+                'about_title': 'Somos Arquitectos<br><span style="color: var(--accent-cyan);">Invisibles</span>',
+                'mockup_h1': 'Inteligencia Logística en <span style="color: var(--accent-cyan);">Flujo Continuo</span>',
+                'mockup_p': 'Motor de telemetría de SKUs en tiempo real. Reduzca la latencia en la toma de decisiones directivas mediante IA predictiva.'
+            },
+            'en': {
+                'nav_home': 'Home',
+                'nav_arch': 'Architecture',
+                'nav_proy': 'Projects',
+                'nav_about': 'About Us',
+                'nav_contact': 'Contact',
+                'nav_planes': 'PLANS & PRICING',
+                'nav_demo': 'Book a Demo',
+                'nav_account': 'My Account',
+                'hero_h1_1': 'INNOVATE.',
+                'hero_h1_2': 'DEVELOP.',
+                'hero_h1_3': 'IMPLEMENT.',
+                'hero_tagline': 'Building the Future of Digital Solutions',
+                'hero_btn': 'View Plans',
+                'roi_title': 'ROI Calculator',
+                'arch_title': '<span>HaraS</span> Architecture',
+                'soluciones_title': 'Our <span>Solutions</span>',
+                'investors_title': 'Our <span>Investors</span>',
+                'proyectos_title': 'Projects <span>in Development</span>',
+                'contact_title': 'Contact <br><span style="color: var(--accent-cyan);">Global Support</span>',
+                'about_title': 'We are Invisible<br><span style="color: var(--accent-cyan);">Architects</span>',
+                'mockup_h1': 'Logistics Intelligence in <span style="color: var(--accent-cyan);">Continuous Flow</span>',
+                'mockup_p': 'Real-time SKU telemetry engine. Reduce directive decision latency through predictive AI.'
+            }
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.getElementById('current-lang-label').innerText = lang.toUpperCase();
+            
+            // Update active state in dropdown
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.innerText.toLowerCase().includes(lang)) {
+                    opt.classList.add('active');
+                }
+            });
+
+            // Update all data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            localStorage.setItem('solventa_lang', lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('solventa_lang') || 'es';
+            setLanguage(savedLang);
+        });
     </script>
 </body>
 
