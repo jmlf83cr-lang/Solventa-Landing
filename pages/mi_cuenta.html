@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta | Solventa Command Center</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Rajdhani:wght@300;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #02040a;
+            --panel-bg: rgba(13, 18, 29, 0.7);
+            --accent-cyan: #00f3ff;
+            --accent-green: #00e676;
+            --accent-alert: #ff2a2a;
+            --text-main: #ffffff;
+            --text-dim: #a0aab5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- NUEVOS ESTILOS PARA DATOS GENERALES --- */
+
+        /* Badges y Etiquetas */
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid;
+            font-family: 'Rajdhani';
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-secure {
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            background: rgba(0, 230, 118, 0.1);
+        }
+
+        .badge-warning {
+            color: var(--accent-alert);
+            border-color: var(--accent-alert);
+            background: rgba(255, 42, 42, 0.1);
+        }
+
+        /* Tarjeta de Datos Corporativos */
+        .corp-data-card {
+            background: rgba(13, 18, 29, 0.6);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-left: 3px solid var(--accent-cyan);
+            /* Acento lateral */
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .data-group label {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            font-family: 'Rajdhani';
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-group .value {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Barras de Consumo (Resources) */
+        .resource-bar-container {
+            margin-top: 10px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        /* Botón de Copiar/Editar pequeño */
+        .action-icon {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+            width: 14px;
+            height: 14px;
+            fill: #fff;
+        }
+
+        .action-icon:hover {
+            opacity: 1;
+            fill: var(--accent-cyan);
+        }
+
+        /* --- FONDO ANIMADO --- */
+        #data-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #0b1021 0%, #02040a 100%);
+        }
+
+        /* --- NAVBAR SIMPLIFICADA --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(2, 4, 10, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .logo img {
+            max-height: 50px;
+        }
+
+        .logo-text {
+            font-family: 'Rajdhani';
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-family: 'Rajdhani';
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border: 1px solid transparent;
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+
+        .logout-btn:hover {
+            color: var(--accent-alert);
+            border-color: var(--accent-alert);
+        }
+
+        /* --- DASHBOARD LAYOUT --- */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        /* --- SIDEBAR / PERFIL --- */
+        .profile-panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: fit-content;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-cyan);
+            background: url('https://via.placeholder.com/150') center/cover;
+            /* Placeholder avatar */
+            margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: var(--accent-cyan);
+            font-family: 'Rajdhani';
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .stats-list {
+            width: 100%;
+            text-align: left;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+        }
+
+        .stat-val {
+            font-family: 'Rajdhani';
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section-header {
+            font-family: 'Rajdhani';
+            font-size: 1.8rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .status-indicator {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        /* GRID PRODUCTOS */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .access-card {
+            background: rgba(13, 18, 29, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .access-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(13, 18, 29, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .prod-icon {
+            width: 40px;
+            height: 40px;
+            fill: var(--accent-cyan);
+        }
+
+        .prod-status {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            height: fit-content;
+            font-weight: bold;
+            font-family: 'Rajdhani';
+        }
+
+        .prod-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .prod-detail {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .launch-btn {
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), transparent);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            font-family: 'Rajdhani';
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .launch-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        /* --- TERMINAL DE ACTIVIDAD --- */
+        .terminal-log {
+            background: #050505;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #33ff33;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .log-time {
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .terminal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.8));
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-panel {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                gap: 20px;
+            }
+
+            .avatar-circle {
+                width: 60px;
+                height: 60px;
+                margin: 0;
+            }
+
+            .stats-list {
+                display: none;
+            }
+
+            /* Ocultar stats en movil para ahorrar espacio */
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="data-network"></canvas>
+
+    <nav>
+        <a href="../index.html" class="logo">
+            <img src="../assets/img/Gemini_Generated_Image_wr70nfwr70nfwr70-removebg-preview.png"
+                alt="Solventa Software">
+        </a>
+
+        <div class="user-menu">
+            <span style="display: none; color: #fff; font-family: 'Rajdhani';">Hola, Admin</span>
+            <a href="../index.html" class="logout-btn">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        <aside class="profile-panel">
+            <div class="avatar-circle" style="background-image: url('https://i.pravatar.cc/150?img=11');"></div>
+
+            <div>
+                <div class="user-name">Carlos CEO</div>
+                <div class="user-role">ADMINISTRADOR GLOBAL</div>
+                <div class="tech-badge badge-secure" style="margin-top: 5px;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                    </svg>
+                    2FA ACTIVO
+                </div>
+            </div>
+
+            <div class="stats-list">
+                <div class="stat-row">
+                    <span class="stat-label">ID Usuario:</span>
+                    <span class="stat-val" style="font-family: monospace;">USR-8821-X</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Último Acceso:</span>
+                    <span class="stat-val">Hoy, 10:42 AM</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">IP Segura:</span>
+                    <span class="stat-val">192.168.1.42</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Nivel Permisos:</span>
+                    <span class="stat-val" style="color: var(--accent-cyan);">ROOT / FULL</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; width: 100%; display: flex; gap: 10px;">
+                <a href="#"
+                    style="flex:1; padding: 10px; border: 1px solid #444; color: #fff; text-decoration: none; font-size: 0.8rem; border-radius: 4px; transition:0.3s;"
+                    onmouseover="this.style.borderColor='#00f3ff'" onmouseout="this.style.borderColor='#444'">Editar
+                    Perfil</a>
+                <a href="#"
+                    style="flex:1; padding: 10px; border: 1px solid #444; color: #fff; text-decoration: none; font-size: 0.8rem; border-radius: 4px; transition:0.3s;"
+                    onmouseover="this.style.borderColor='#00f3ff'"
+                    onmouseout="this.style.borderColor='#444'">Seguridad</a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+
+            <div class="corp-data-card">
+                <div class="section-header" style="border:none; margin:0; padding:0; font-size: 1.4rem;">
+                    Ficha Corporativa
+                    <a href="#" style="font-size: 0.8rem; color: var(--accent-cyan); text-decoration: none;">[
+                        Actualizar Datos ]</a>
+                </div>
+
+                <div class="data-grid">
+                    <div class="data-group">
+                        <label>Razón Social</label>
+                        <div class="value">Soluciones Logísticas Globales S.A.</div>
+                    </div>
+                    <div class="data-group">
+                        <label>RUT / Tax ID</label>
+                        <div class="value">76.448.290-K <svg class="action-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg></div>
+                    </div>
+
+                    <div class="data-group">
+                        <label>Plan de Suscripción</label>
+                        <div class="value" style="color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">
+                            ENTERPRISE TIER 1
+                        </div>
+                    </div>
+                    <div class="data-group">
+                        <label>Próxima Facturación</label>
+                        <div class="value">30 Diciembre 2025</div>
+                    </div>
+
+                    <div class="data-group"
+                        style="grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px;">
+                        <div class="resource-bar-container">
+                            <div class="bar-label">
+                                <span>Almacenamiento Cloud (Data Lake)</span>
+                                <span>1.2 TB / 5 TB</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 24%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="resource-bar-container">
+                            <div class="bar-label">
+                                <span>Peticiones API (Mensual)</span>
+                                <span>854k / 1M Requests</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill"
+                                    style="width: 85%; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-header">
+                    Módulos Activos
+                    <div class="status-indicator">
+                        <div class="status-dot"></div> SYSTEM ONLINE
+                    </div>
+                </div>
+
+                <div class="products-grid">
+                    <div class="access-card">
+                        <div class="card-top">
+                            <svg class="prod-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M20,6h-2.18c0.11-0.31,0.18-0.65,0.18-1c0-1.66-1.34-3-3-3C13.34,2,12,3.34,12,5c0,0.35,0.07,0.69,0.18,1H11.82 C11.93,5.69,12,5.35,12,5c0-1.66-1.34-3-3-3C7.34,2,6,3.34,6,5c0,0.35,0.07,0.69,0.18,1H4C2.9,6,2,6.9,2,8v12c0,1.1,0.9,2,2,2h16 c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z" />
+                            </svg>
+                            <span class="prod-status">ACTIVO</span>
+                        </div>
+                        <div class="prod-name">EGL WMS</div>
+                        <div class="prod-detail">Gestión de Inventarios Bodega Central.</div>
+                        <a href="#" class="launch-btn">Ingresar</a>
+                    </div>
+
+                    <div class="access-card">
+                        <div class="card-top">
+                            <svg class="prod-icon" viewBox="0 0 24 24">
+                                <path d="M21,11V3h-8v8h-2V5H3v16h8v-6h2v4h8v-8H21z M11,9H5V5h6V9z" />
+                            </svg>
+                            <span class="prod-status">ACTIVO</span>
+                        </div>
+                        <div class="prod-name">EGL CORE</div>
+                        <div class="prod-detail">Finanzas y Facturación.</div>
+                        <a href="#" class="launch-btn">Ingresar</a>
+                    </div>
+
+                    <div class="access-card" style="border-color: #7c4dff;">
+                        <div class="card-top">
+                            <svg class="prod-icon" style="fill: #7c4dff;" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,17c-2.76,0-5-2.24-5-5s2.24-5,5-5s5,2.24,5,5 S14.76,17,12,17z" />
+                            </svg>
+                            <span class="prod-status"
+                                style="color: #7c4dff; border-color: #7c4dff; background: rgba(124, 77, 255, 0.1);">BETA</span>
+                        </div>
+                        <div class="prod-name">AI SUPERVISOR</div>
+                        <div class="prod-detail">Monitoreo predictivo.</div>
+                        <a href="#" class="launch-btn" style="border-color: #7c4dff; color: #7c4dff;">Consultar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-header" style="font-size: 1.2rem; border:none; margin-bottom: 5px;">Registro de
+                    Actividad</div>
+                <div class="terminal-log">
+                    <div class="log-line"><span class="log-time">[10:42:01]</span> User login successful (IP:
+                        192.168.1.42)</div>
+                    <div class="log-line"><span class="log-time">[10:42:05]</span> Connecting to WMS Database... OK
+                    </div>
+                    <div class="log-line"><span class="log-time">[10:43:12]</span> Syncing ERP modules... Completed
+                        (0.4s)</div>
+                    <div class="log-line"><span class="log-time">[10:45:00]</span> AI Agent: "Se detectó bajo stock en
+                        Zona B"</div>
+                    <div class="terminal-overlay"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('data-network');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        const particleCount = 60; // Menos partículas para no distraer en dashboard
+        const connectionDistance = 150; const mouseDistance = 200; let mouse = { x: null, y: null };
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+                let dx = mouse.x - this.x; let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouseDistance) {
+                    const force = (mouseDistance - distance) / mouseDistance;
+                    this.x -= (dx / distance) * force * 2; this.y -= (dy / distance) * force * 2;
+                }
+            }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = '#00f3ff'; ctx.fill(); }
+        }
+        function init() { particles = []; for (let i = 0; i < particleCount; i++) particles.push(new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x; let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(0, 243, 255,' + (1 - distance / connectionDistance) * 0.15 + ')';
+                        ctx.lineWidth = 1; ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        resize(); init(); animate();
+    </script>
+    <!-- System Protection Script -->
+    <script>
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            return false;
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 123) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.keyCode == 85) { e.preventDefault(); return false; }
+        });
+    </script>
+</body>
+
+</html>

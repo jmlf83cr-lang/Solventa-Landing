@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EGL - Enterprise Solutions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Rajdhani:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-color: #0b1021; /* Azul corporativo muy oscuro */
+            --accent-color: #00f3ff; /* Cyan Tech */
+            --accent-dim: rgba(0, 243, 255, 0.1);
+            --security-color: #7c4dff; /* Violeta para Seguridad/Encriptación */
+            --orb-color: #00f3ff;
+            --text-color: #e0e6ed;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* FONDO RED */
+        .background-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(600px) rotateX(60deg);
+            top: -40%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* HEADER */
+        header { position: absolute; top: 2rem; text-align: center; z-index: 10; }
+        h1 { margin: 0; font-weight: 700; letter-spacing: 0.1em; color: white; font-size: 2.5rem; }
+        .subtitle { color: var(--accent-color); font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; }
+
+        /* CHART FLOTANTE TÉCNICO */
+        .chart-container {
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 700px; height: 350px;
+            display: flex; align-items: flex-end; justify-content: space-around;
+            z-index: 5; opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+        }
+        .chart-container.visible { opacity: 1; }
+
+        .bar-group { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 80px; }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--accent-dim), var(--accent-color));
+            box-shadow: 0 0 15px var(--accent-color);
+            border-radius: 4px 4px 0 0;
+            height: 0;
+            transition: height 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        
+        /* Modo Seguridad */
+        .security-mode .bar {
+            background: linear-gradient(to top, rgba(124, 77, 255, 0.1), var(--security-color));
+            box-shadow: 0 0 20px var(--security-color);
+        }
+
+        .bar-label { margin-top: 15px; font-size: 0.8rem; color: #a0aec0; font-weight: bold; text-align: center; letter-spacing: 1px; }
+        .bar-value { margin-bottom: 10px; font-size: 0.9rem; font-family: monospace; color: white; opacity: 0; transition: opacity 0.5s; }
+        .visible .bar-value { opacity: 1; }
+
+        /* ORBE */
+        .orb-container { position: relative; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; z-index: 20; }
+        .orb {
+            width: 80px; height: 80px;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--orb-color));
+            border-radius: 50%;
+            box-shadow: 0 0 30px var(--orb-color), 0 0 60px var(--orb-color);
+            transition: all 0.3s ease;
+        }
+        .orb.security { background: radial-gradient(circle at 30% 30%, #fff, var(--security-color)); box-shadow: 0 0 30px var(--security-color), 0 0 60px var(--security-color); }
+        .orb.idle { animation: breathe 4s infinite ease-in-out; }
+        .orb.speaking { animation: pulse-speak 0.3s infinite alternate; }
+
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes pulse-speak { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+        /* BRANDING */
+        .brand-logo-container { margin-top: 2rem; margin-bottom: 1.5rem; z-index: 10; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+        .brand-main {
+            font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 2.2rem; color: white;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            background: linear-gradient(to bottom, #ffffff, #b0bec5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brand-sub {
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 0.9rem; color: var(--accent-color);
+            letter-spacing: 0.58em; margin-top: 5px; margin-left: 5px;
+        }
+
+        /* ESTADO */
+        .status-text { margin-top: 1rem; font-size: 1.1rem; text-align: center; color: #64748b; font-weight: 600; z-index: 10; font-family: monospace; }
+
+        /* BOTONES */
+        .silent-controls { position: absolute; bottom: 2.5rem; display: flex; gap: 15px; z-index: 100; flex-wrap: wrap; justify-content: center; }
+        .cmd-btn {
+            background: rgba(0, 243, 255, 0.05); border: 1px solid #2d3748; color: #a0aec0;
+            padding: 12px 24px; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; text-transform: uppercase; border-radius: 4px; letter-spacing: 1px;
+        }
+        .cmd-btn:hover { background: var(--accent-color); color: #000; border-color: var(--accent-color); box-shadow: 0 0 25px rgba(0, 243, 255, 0.4); }
+        
+        .btn-sec { border-color: var(--security-color); color: var(--security-color); }
+        .btn-sec:hover { background: var(--security-color); color: white; box-shadow: 0 0 25px rgba(124, 77, 255, 0.4); }
+
+        /* OVERLAY INICIO */
+        #start-overlay { position: fixed; inset: 0; background: rgba(11, 16, 33, 0.98); z-index: 1000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .start-btn {
+            background: transparent; border: 2px solid var(--accent-color); color: var(--accent-color);
+            padding: 18px 50px; font-size: 1.3rem; font-weight: bold; font-family: 'Montserrat';
+            cursor: pointer; transition: 0.3s;
+        }
+        .start-btn:hover { background: var(--accent-color); color: #0b1021; box-shadow: 0 0 40px var(--accent-color); }
+
+    </style>
+</head>
+<body>
+
+    <div id="start-overlay">
+        <button class="start-btn" onclick="initSystem()">ACCEDER A LA ARQUITECTURA</button>
+        <div style="margin-top: 20px; color: #64748b; font-size: 0.9rem; font-family: monospace;">Nivel: Enterprise / CTO</div>
+    </div>
+
+    <div class="background-grid"></div>
+
+    <header>
+        <h1>SOLUCIÓN ENTERPRISE</h1>
+        <div class="subtitle">Infraestructura Crítica & Escalabilidad</div>
+    </header>
+
+    <div class="chart-container" id="chart">
+        <div class="bar-group">
+            <span class="bar-value" id="val1"></span>
+            <div class="bar" id="bar1"></div>
+            <span class="bar-label" id="lbl1"></span>
+        </div>
+        <div class="bar-group">
+            <span class="bar-value" id="val2"></span>
+            <div class="bar" id="bar2"></div>
+            <span class="bar-label" id="lbl2"></span>
+        </div>
+        <div class="bar-group">
+            <span class="bar-value" id="val3"></span>
+            <div class="bar" id="bar3"></div>
+            <span class="bar-label" id="lbl3"></span>
+        </div>
+        <div class="bar-group">
+            <span class="bar-value" id="val4"></span>
+            <div class="bar" id="bar4"></div>
+            <span class="bar-label" id="lbl4"></span>
+        </div>
+    </div>
+
+    <div class="orb-container">
+        <div class="orb idle" id="orb"></div>
+    </div>
+
+    <div class="status-text" id="status">SISTEMAS NOMINALES</div>
+
+    <div class="brand-logo-container">
+        <div class="brand-main">SOLVENTA</div>
+        <div class="brand-sub">SOFTWARE</div>
+    </div>
+
+    <div class="silent-controls">
+        <button class="cmd-btn" onclick="ask('integracion')">INTEGRACIÓN ERP</button>
+        <button class="cmd-btn" onclick="ask('custom')">DESARROLLO A MEDIDA</button>
+        <button class="cmd-btn" onclick="ask('legacy')">VS LEGACY</button>
+        <button class="cmd-btn btn-sec" onclick="ask('seguridad')">SEGURIDAD & SLA</button>
+    </div>
+
+    <script>
+        const orb = document.getElementById('orb');
+        const statusDiv = document.getElementById('status');
+        const chart = document.getElementById('chart');
+        let synth = window.speechSynthesis;
+
+        // --- DISCURSO DE APERTURA (TÉCNICO Y CORPORATIVO) ---
+        const OPENING_PITCH = "Permitame darle la Bienvenida a la capa Enterprise de EGL. Soy su Arquitecto de Soluciones. Nuestra plataforma está diseñada para operaciones de alto volumen donde el fallo no es una opción. Ofrecemos integración nativa vía API, despliegue híbrido Edge-Cloud y cumplimiento estricto de seguridad de datos. Estoy aquí para mostrarle el futuro de la logística. EGL Soluciona no es solo un software de registro, es un sistema de gobierno operacional que elimina el caos. Pasamos del monitoreo de dashboards tradicional en pantalla a operar con asistencia evolutiva de IA, el cual es un técnico experto no solo en el ecosistema sino en temas logísticos, garantizando continuidad operativa total, con o sin internet que implementamos con un vaul de datos(gemelo digital). Conmigo al mando, su empresa no solo almacena, se posiciona y domina el mercado.";
+
+
+        // --- CEREBRO DEL AGENTE (ENTERPRISE) ---
+        function ask(topic) {
+            let text = "";
+            let mode = "normal";
+            let chartValues = [];
+            let chartLabels = [];
+            let displayValues = [];
+
+            statusDiv.innerText = "ACCEDIENDO A BASE DE CONOCIMIENTO...";
+            statusDiv.style.color = (topic === 'seguridad') ? "var(--security-color)" : "var(--accent-color)";
+            orb.className = 'orb listening';
+
+            switch(topic) {
+                case 'integracion': // API & ERP
+                    text = "EGL no compite con su ERP, lo potencia. Nos integramos bidireccionalmente con SAP, Oracle o Microsoft Dynamics mediante APIs RESTful seguras. Nosotros manejamos la operatividad física en tiempo real y sincronizamos los saldos contables con su ERP central automáticamente. Cero doble digitación.";
+                    chartValues = [20, 100, 100, 5];
+                    chartLabels = ["SILOS", "API REST", "WEBHOOKS", "LATENCIA"];
+                    displayValues = ["No", "Sí", "Sí", "<50ms"];
+                    break;
+
+                case 'custom': // A MEDIDA
+                    text = "Entendemos que su operación es única. La arquitectura modular de EGL permite desarrollar micro-servicios específicos para sus reglas de negocio sin afectar el núcleo del sistema. Mantenemos la estabilidad de una plataforma SaaS con la flexibilidad de un desarrollo in-house.";
+                    chartValues = [30, 90, 95, 100];
+                    chartLabels = ["RIGIDEZ", "MODULAR", "SCALABLE", "STABLE"];
+                    displayValues = ["Baja", "Alta", "Auto", "99.9%"];
+                    break;
+
+                case 'legacy': // VS SISTEMA ACTUAL
+                    text = "Mantener sistemas Legacy es costoso y riesgoso. Carecen de movilidad, dependen de servidores locales obsoletos y no escalan. EGL moderniza su capa operativa inmediatamente (Edge Computing) sin obligarlo a migrar toda su base de datos histórica el primer día.";
+                    chartValues = [20, 100, 10, 95];
+                    chartLabels = ["MOVILIDAD", "CLOUD", "COSTO", "UPTIME"];
+                    displayValues = ["Nula", "Nativa", "OpEx", "Alto"];
+                    break;
+
+                case 'seguridad': // SEGURIDAD & SLA
+                    mode = "security";
+                    text = "La seguridad es nuestra prioridad cero. Implementamos encriptación AES-256 en reposo y tránsito. Ofrecemos Acuerdos de Nivel de Servicio (SLA) garantizados con soporte prioritario 24 7 y auditoría completa de logs para cumplimiento normativo.";
+                    chartValues = [100, 100, 100, 100];
+                    chartLabels = ["AES-256", "ISO-LOGS", "BACKUP", "SLA"];
+                    displayValues = ["OK", "OK", "AUTO", "24/7"];
+                    break;
+            }
+
+            setTimeout(() => {
+                updateChart(chartValues, chartLabels, displayValues, mode);
+                speak(text, mode);
+            }, 800);
+        }
+
+        function updateChart(values, labels, displayVals, mode) {
+            chart.classList.remove('visible');
+            chart.classList.remove('security-mode');
+            
+            setTimeout(() => {
+                if(mode === 'security') chart.classList.add('security-mode');
+                
+                for(let i=0; i<4; i++) {
+                    const bar = document.getElementById(`bar${i+1}`);
+                    const lbl = document.getElementById(`lbl${i+1}`);
+                    const val = document.getElementById(`val${i+1}`);
+
+                    bar.style.height = values[i] + '%';
+                    lbl.innerText = labels[i];
+                    val.innerText = displayVals[i];
+                    val.style.opacity = 1;
+                }
+                chart.classList.add('visible');
+            }, 300);
+            
+            setTimeout(() => { chart.classList.remove('visible'); }, 12000);
+        }
+
+        function speak(text, mode = "normal") {
+            if (synth.speaking) { synth.cancel(); }
+
+            const utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.lang = 'es-ES';
+            // Tono Ejecutivo/Técnico
+            utterThis.rate = 1.15; 
+            utterThis.pitch = 0.9; 
+
+            const voices = synth.getVoices();
+            const esVoice = voices.find(v => v.lang.startsWith('es') && v.name.includes('Google')); 
+            if (esVoice) utterThis.voice = esVoice;
+
+            utterThis.onstart = () => {
+                orb.className = 'orb speaking';
+                if(mode === 'security') orb.classList.add('security');
+                statusDiv.innerText = "TRANSMITIENDO DATOS...";
+                statusDiv.style.color = (mode === 'security') ? "var(--security-color)" : "#fff";
+            };
+
+            utterThis.onend = () => {
+                orb.className = 'orb idle';
+                statusDiv.innerText = "ESPERANDO SOLICITUD";
+                statusDiv.style.color = "#64748b";
+            };
+
+            synth.speak(utterThis);
+        }
+
+        function initSystem() {
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 500);
+            setTimeout(() => { speak(OPENING_PITCH); }, 1000);
+        }
+    </script>
+    <!-- System Protection Script -->
+    <script>
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            return false;
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 123) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.keyCode == 85) { e.preventDefault(); return false; }
+        });
+    </script>
+</body>
+</html>

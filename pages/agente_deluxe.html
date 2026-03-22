@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EGL - Protocolo HaraS (Deluxe)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Rajdhani:wght@500;700&display=swap');
+
+        :root {
+            --bg-intense: #000000;
+            --titanium: #e0e6ed;
+            --alert-red: #ff3333;
+            --tech-cyan: #00f3ff; /* Solo para detalles muy sutiles */
+        }
+
+        body {
+            background-color: var(--bg-intense);
+            /* Fondo técnico sutil */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--titanium);
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Efecto de viñeta oscura */
+        body::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 40%, #000 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* HEADER TÁCTICO */
+        header { position: absolute; top: 2rem; text-align: center; z-index: 10; }
+        h1 { 
+            margin: 0; font-family: 'Montserrat'; font-weight: 900; letter-spacing: 0.15em; 
+            color: var(--titanium); font-size: 2rem; text-transform: uppercase; 
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+            border-bottom: 2px solid var(--titanium); display: inline-block; padding-bottom: 5px;
+        }
+        .subtitle { 
+            color: #888; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; 
+            font-weight: 700; margin-top: 10px;
+        }
+        .security-clearance {
+            font-family: monospace; color: var(--alert-red); font-size: 0.7rem; margin-top: 5px; font-weight: bold;
+        }
+
+        /* VISUALIZACIÓN CENTRAL (Escudo/Reactor) */
+        .core-container {
+            position: relative; width: 200px; height: 200px;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 20; margin-bottom: 30px;
+        }
+
+        /* El Orbe central (Reactor) */
+        .orb {
+            width: 80px; height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.6), inset 0 0 20px rgba(0,0,0,0.2);
+            position: relative; z-index: 22;
+            transition: all 0.2s ease-out;
+        }
+        /* Anillos de contención giratorios */
+        .ring {
+            position: absolute; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .ring-1 { width: 120px; height: 120px; border-width: 2px; border-style: dashed; animation: spin 20s linear infinite; }
+        .ring-2 { width: 160px; height: 160px; border-width: 1px; border-color: rgba(255,255,255,0.1); animation: spin-rev 15s linear infinite; }
+        .ring-3 { width: 190px; height: 190px; border: 4px solid transparent; border-top-color: var(--titanium); border-bottom-color: var(--titanium); animation: spin 8s linear infinite; opacity: 0.5;}
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-rev { 100% { transform: rotate(-360deg); } }
+
+        /* Estados del Orbe */
+        .orb.speaking { 
+            animation: pulse-speak 0.1s infinite alternate; 
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.9), inset 0 0 10px rgba(255,255,255,0.5);
+            background: #ffffff;
+        }
+        .orb.idle { animation: stable-hum 4s infinite ease-in-out; }
+
+        @keyframes pulse-speak { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.08); opacity: 1; } }
+        @keyframes stable-hum { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; box-shadow: 0 0 60px rgba(255, 255, 255, 0.7); } }
+
+        /* ESTADO DEL SISTEMA */
+        .status-panel {
+            text-align: center; z-index: 10; margin-bottom: 40px;
+        }
+        .status-text { 
+            font-size: 1.1rem; color: var(--titanium); font-family: monospace; 
+            letter-spacing: 2px; text-transform: uppercase; font-weight: bold;
+        }
+        .status-sub { font-size: 0.8rem; color: #666; margin-top: 5px; font-family: monospace;}
+
+        /* BOTONES DE COMANDO (Estilo Militar) */
+        .controls-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            width: 90%; max-width: 600px; z-index: 100;
+        }
+        .cmd-btn {
+            background: rgba(20, 20, 20, 0.8); border: 1px solid #444; color: #aaa;
+            padding: 15px 20px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;
+            position: relative; overflow: hidden; text-align: left;
+            display: flex; align-items: center; gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+        .cmd-btn::before {
+            content: ''; width: 8px; height: 8px; background: #444; transform: rotate(45deg); transition: 0.3s;
+        }
+        .cmd-btn:hover { border-color: var(--titanium); color: var(--titanium); background: rgba(40, 40, 40, 0.9); }
+        .cmd-btn:hover::before { background: var(--titanium); box-shadow: 0 0 10px var(--titanium); }
+        .btn-alert:hover { border-color: var(--alert-red); color: var(--alert-red); }
+        .btn-alert:hover::before { background: var(--alert-red); box-shadow: 0 0 10px var(--alert-red); }
+
+        /* OVERLAY DE INICIO (Seguridad) */
+        #start-overlay { 
+            position: fixed; inset: 0; background: #000; z-index: 2000; 
+            display: flex; justify-content: center; align-items: center; flex-direction: column; 
+        }
+        .auth-box {
+            border: 1px solid #444; padding: 40px; text-align: center; background: rgba(10,10,10,0.9);
+        }
+        .start-btn {
+            background: transparent; border: 2px solid var(--titanium); color: var(--titanium);
+            padding: 15px 40px; font-size: 1rem; font-weight: 900; font-family: 'Montserrat';
+            cursor: pointer; transition: 0.3s; letter-spacing: 3px; text-transform: uppercase;
+            margin-top: 20px;
+        }
+        .start-btn:hover { background: var(--titanium); color: #000; box-shadow: 0 0 30px rgba(255, 255, 255, 0.3); }
+
+    </style>
+</head>
+<body>
+
+    <div id="start-overlay">
+        <div class="auth-box">
+            <div style="font-family: monospace; color: var(--alert-red); margin-bottom: 10px;">[ ACCESO RESTRINGIDO NIVEL 5 ]</div>
+            <h2 style="margin: 0; color: white; font-family: 'Montserrat';">PROTOCOLO HARAS</h2>
+            <div style="color: #888; margin-top: 5px; font-size: 0.9rem;">Verificación biométrica requerida.</div>
+            <button class="start-btn" onclick="initSystem()">AUTORIZAR ACCESO</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>BÚNKER HARAS</h1>
+        <div class="subtitle">Arquitectura de Aislamiento Total</div>
+        <div class="security-clearance">CLEARANCE: TOP SECRET // EYES ONLY</div>
+    </header>
+
+    <div class="core-container">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="orb idle" id="orb"></div>
+    </div>
+
+    <div class="status-panel">
+        <div class="status-text" id="status">SISTEMA EN ESPERA</div>
+        <div class="status-sub" id="sub-status">Monitoreo perimetral activo.</div>
+    </div>
+
+    <div class="controls-grid">
+        <button class="cmd-btn" onclick="ask('seguridad')">1. Concepto "Superficie Cero"</button>
+        <button class="cmd-btn" onclick="ask('offline')">2. Autonomía Offline</button>
+        <button class="cmd-btn" onclick="ask('hardware')">3. Especificaciones Bastión</button>
+        <button class="cmd-btn btn-alert" onclick="ask('contacto')">4. // INICIAR PROTOCOLO //</button>
+    </div>
+
+    <script>
+        const orb = document.getElementById('orb');
+        const statusDiv = document.getElementById('status');
+        const subStatusDiv = document.getElementById('sub-status');
+        let synth = window.speechSynthesis;
+        let voices = [];
+
+        // Cargar voces
+        function loadVoices() {
+            voices = synth.getVoices();
+        }
+        loadVoices();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // --- DISCURSO: AUTORITARIO, GRAVE, LENTO ---
+        const OPENING_PITCH = "Identidad confirmada. Ha ingresado al Búnker HaraS. Soy el Custodio. Aquí no existe la nube. Aquí, sus datos no vuelan; se atrincheran. Ofrecemos la única arquitectura civil con superficie de ataque cero. Si busca conveniencia, regrese a Enterprise. Si busca soberanía absoluta, permanezca en línea.";
+
+        function ask(topic) {
+            let text = "";
+            statusDiv.innerText = "PROCESANDO SOLICITUD...";
+            subStatusDiv.innerText = "Desencriptando respuesta segura...";
+            orb.className = 'orb idle'; // Pausa breve antes de hablar
+
+            switch(topic) {
+                case 'seguridad': // HACK-PROOF
+                    text = "La única forma de evitar un ataque remoto es no tener puerta de entrada. HaraS opera en aislamiento total. Sin IPs públicas. Sin puertos abiertos. Para vulnerar este sistema, necesitarían acceso físico a sus instalaciones y romper el hardware Bastión. Es seguridad por física, no por software.";
+                    break;
+
+                case 'offline': // AUTONOMÍA
+                    text = "El mundo puede caer, pero su operación no. HaraS no depende de la red global. Es soberanía pura. Las actualizaciones críticas se entregan mediante un protocolo de transporte humano: una llave criptográfica blindada entregada en mano por un oficial de custodia. El puente es físico y consciente.";
+                    break;
+
+                case 'hardware': // EL FIERRO
+                    text = "No instalamos software en hardware genérico. Desplegamos el Bastión HaraS. Un servidor industrial dedicado: Chasis reforzado anti-vibración, procesador gama alta y almacenamiento en espejo RAID 1. Si un componente falla, el sistema ni siquiera parpadea. Es potencia bruta blindada.";
+                    break;
+
+                case 'contacto': // CIERRE
+                    text = "Comprendido. La implementación del protocolo requiere validación de nivel ejecutivo. He marcado su solicitud con Prioridad Alfa. Un consultor de seguridad senior establecerá contacto por canal seguro para coordinar el despliegue físico. Cierre de sesión inminente.";
+                    statusDiv.style.color = "var(--alert-red)";
+                    break;
+            }
+
+            setTimeout(() => {
+                speak(text);
+            }, 500);
+        }
+
+        function speak(text) {
+            if (synth.speaking) { synth.cancel(); }
+
+            const utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.lang = 'es-ES';
+            
+            // --- CONFIGURACIÓN DE VOZ "CUSTODIO" ---
+            utterThis.rate = 0.85;  // Más lento
+            utterThis.pitch = 0.6;  // Más grave/profundo
+            utterThis.volume = 1.0;
+
+            // Intentar buscar una voz masculina profunda si está disponible
+            const preferredVoice = voices.find(v => 
+                (v.lang.startsWith('es') && v.name.toLowerCase().includes('google') && !v.name.toLowerCase().includes('female')) ||
+                (v.lang.startsWith('es') && v.name.includes('Pablo')) || 
+                (v.lang.startsWith('es') && v.gender === 'male')
+            );
+            
+            if (preferredVoice) {
+                utterThis.voice = preferredVoice;
+                // Ajuste fino si encontramos una buena voz de Google
+                if(preferredVoice.name.includes('Google')) {
+                     utterThis.rate = 0.9; utterThis.pitch = 0.55;
+                }
+            }
+
+            utterThis.onstart = () => {
+                orb.className = 'orb speaking';
+                statusDiv.innerText = "TRANSMISIÓN SEGURA ACTIVA";
+                subStatusDiv.innerText = "Canal de voz encriptado.";
+            };
+
+            utterThis.onend = () => {
+                orb.className = 'orb idle';
+                statusDiv.innerText = "SISTEMA EN ESPERA";
+                subStatusDiv.innerText = "Monitoreo perimetral activo.";
+                statusDiv.style.color = "var(--titanium)";
+            };
+
+            synth.speak(utterThis);
+        }
+
+        function initSystem() {
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.transition = 'opacity 0.8s ease-in';
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 800);
+            
+            // Pequeño retraso dramático antes de hablar
+            setTimeout(() => { speak(OPENING_PITCH); }, 1200);
+        }
+    </script>
+    <!-- System Protection Script -->
+    <script>
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            return false;
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 123) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.keyCode == 85) { e.preventDefault(); return false; }
+        });
+    </script>
+</body>
+</html>
